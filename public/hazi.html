@@ -1,34 +1,32 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#0b0b0e" />
-  <meta name="theme-color" content="#e85d75" />
-  <title>HaziBooth · Photobooth LDR Langsung</title>
+  <title>Photobooth · Live LDR Photobooth</title>
   <script src="/socket.io/socket.io.js"></script>
 <style>
     :root {
-      color-scheme: light;
-      --bg: #f7f3ef;
-      --panel: #fffdfb;
-      --panel-2: #f3ece7;
-      --text: #211b1d;
-      --muted: #786d70;
-      --subtle: #a79b9e;
-      --accent: #e85d75;
-      --accent-2: #ff8d9d;
-      --accent-soft: #ffe5ea;
-      --cream: #fff8f5;
-      --ink: #211b1d;
-      --live: #ef5367;
-      --ok: #48a878;
-      --border: rgba(33,27,29,.09);
-      --border-strong: rgba(33,27,29,.15);
-      --serif: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
-      --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+      color-scheme: dark;
+      --bg: #0a0806;
+      --panel: #14110c;
+      --panel-2: #1c1812;
+      --text: #f3ecdd;
+      --muted: #b6ad9a;
+      --subtle: #8d8472;
+      --amber: #e8a33d;
+      --amber-hi: #f6bd6a;
+      --paper: #f5eedd;
+      --ink: #14100a;
+      --live: #e0524a;
+      --ok: #8fbf6f;
+      --border: rgba(245,238,221,.09);
+      --border-strong: rgba(245,238,221,.17);
+      --serif: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", "Times New Roman", serif;
+      --mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
       --sans: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      --shadow: 0 24px 70px rgba(70,45,50,.13);
+      --shadow: 0 24px 80px rgba(0,0,0,.52);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -41,39 +39,48 @@
       place-items: center;
       overflow-x: hidden;
       background:
-        radial-gradient(700px 420px at 8% 0%, rgba(255,141,157,.20), transparent 65%),
-        radial-gradient(800px 500px at 95% 100%, rgba(232,93,117,.12), transparent 65%),
-        radial-gradient(circle at 1px 1px, rgba(33,27,29,.045) 1px, transparent 1.2px) 0 0 / 24px 24px,
-        var(--bg);
+        radial-gradient(1100px 460px at 50% -8%, rgba(232,163,61,.09), transparent 62%),
+        radial-gradient(1400px 900px at 50% 120%, rgba(122,62,28,.1), transparent 62%),
+        #0a0806;
       color: var(--text);
       font-family: var(--sans);
     }
 
     button, input { font: inherit; }
     button { -webkit-tap-highlight-color: transparent; }
-    :focus-visible { outline: 3px solid rgba(232,93,117,.28); outline-offset: 3px; }
+    :focus-visible { outline: 2px solid rgba(232,163,61,.75); outline-offset: 2px; }
     input:focus-visible { outline-offset: 0; }
     .icon { width: 18px; height: 18px; flex: 0 0 auto; }
 
     #app {
       position: relative;
       overflow: hidden;
-      width: min(1120px, 100%);
-      border: 1px solid rgba(33,27,29,.10);
-      border-radius: 32px;
+      width: min(1080px, 100%);
+      border: 1px solid rgba(245,238,221,.12);
+      border-radius: 34px;
       padding: 22px;
-      background: rgba(255,253,251,.92);
-      box-shadow: var(--shadow), 0 2px 0 rgba(255,255,255,.8) inset;
-      backdrop-filter: blur(18px);
+      background:
+        radial-gradient(900px 380px at 50% -10%, rgba(232,163,61,.05), transparent 60%),
+        linear-gradient(180deg, rgba(28,24,17,.94), rgba(20,17,12,.96) 40%);
+      box-shadow: var(--shadow), inset 0 1px 0 rgba(255,250,235,.05);
     }
+    /* marquee bulb row: the booth sign */
     #app::before {
       content: "";
       position: absolute;
       top: 0; left: 0; right: 0;
-      height: 5px;
-      background: linear-gradient(90deg, #ff9bad, #e85d75, #ffb36c, #e85d75, #ff9bad);
+      height: 40px;
       pointer-events: none;
+      z-index: 4;
+      border-radius: 34px 34px 0 0;
+      background:
+        radial-gradient(circle at 50% 0, rgba(232,163,61,.22), transparent 72%) 0 0 / 100% 40px no-repeat,
+        radial-gradient(circle at 11px 9px, rgba(232,163,61,.85) 0 2.5px, rgba(232,163,61,.2) 3.5px, transparent 4.5px) 15px 0 / 66px 24px repeat-x,
+        radial-gradient(circle at 11px 9px, rgba(255,250,235,.92) 0 2px, rgba(255,250,235,.28) 3.5px, transparent 4.5px) 0 0 / 22px 24px repeat-x,
+        linear-gradient(180deg, #1b160e, #131009);
+      border-bottom: 1px solid var(--border);
     }
+    /* inner shadow so the booth feels enclosed */
     #app::after {
       content: "";
       position: absolute;
@@ -81,7 +88,7 @@
       pointer-events: none;
       z-index: 3;
       border-radius: inherit;
-      box-shadow: inset 0 0 70px rgba(90,54,62,.035);
+      box-shadow: inset 0 0 90px rgba(0,0,0,.5);
     }
 
     .app-header {
@@ -90,82 +97,85 @@
       justify-content: space-between;
       gap: 14px;
       margin-bottom: 18px;
-      padding-top: 10px;
+      padding-top: 50px;
     }
+
     .brand { display: flex; align-items: center; gap: 11px; min-width: 0; }
     .brand-mark {
-      width: 44px;
-      height: 44px;
+      width: 42px;
+      height: 42px;
       display: grid;
       place-items: center;
-      border-radius: 15px;
-      border: 1px solid rgba(232,93,117,.20);
-      background: linear-gradient(145deg, #ffe8ed, #ffd5dd);
-      color: var(--accent);
-      box-shadow: 0 8px 24px rgba(232,93,117,.15), inset 0 1px 0 rgba(255,255,255,.9);
+      border-radius: 14px;
+      border: 1px solid var(--border-strong);
+      background: linear-gradient(160deg, #241e13, #16120b);
+      color: var(--amber-hi);
+      box-shadow: inset 0 0 0 1px rgba(255,250,235,.04), 0 6px 18px rgba(0,0,0,.35);
     }
-    .brand-mark .icon { width: 22px; height: 22px; }
+    .brand-mark .icon { width: 21px; height: 21px; }
     .brand h1 {
       font-family: var(--serif);
-      font-size: clamp(21px, 3vw, 26px);
-      font-weight: 800;
-      letter-spacing: -.025em;
-      color: var(--text);
+      font-size: clamp(19px, 3vw, 24px);
+      font-weight: 700;
+      letter-spacing: -.01em;
+      color: var(--paper);
+      text-shadow: 0 2px 18px rgba(232,163,61,.16);
     }
-    .brand small { display: block; margin-top: 2px; color: var(--muted); font-size: 11px; }
+    .brand small { display: block; color: var(--muted); font-size: 11px; margin-top: 2px; }
+
     .room-badge {
-      display: inline-flex;
+      flex: 0 0 auto;
+      max-width: 46%;
+      display: flex;
       align-items: center;
-      gap: 7px;
-      max-width: 48%;
-      overflow: hidden;
-      padding: 8px 11px;
+      gap: 8px;
+      padding: 8px 12px;
       border: 1px solid var(--border);
       border-radius: 999px;
-      background: rgba(255,255,255,.72);
+      background: rgba(245,238,221,.045);
       color: var(--muted);
-      font-family: var(--mono);
-      font-size: 10px;
+      font-size: 12px;
+      overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
     }
-    .dot { width: 7px; height: 7px; flex: 0 0 auto; border-radius: 50%; background: #b9afb1; box-shadow: 0 0 0 4px rgba(185,175,177,.13); }
-    .dot.connected { background: var(--ok); box-shadow: 0 0 0 4px rgba(72,168,120,.12); }
+    #roomDisplay { font-family: var(--mono); font-size: 12px; letter-spacing: .03em; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--subtle); }
+    .dot.online { background: var(--ok); box-shadow: 0 0 14px rgba(143,191,111,.55); }
 
-    .view { display: none; animation: viewIn .35s ease both; }
+    .view { display: none; animation: enter .32s ease both; }
     .view.active { display: block; }
-    @keyframes viewIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+    @keyframes enter { from { opacity: 0; transform: translateY(12px) scale(.995); } }
 
-    #joinView { padding: clamp(34px, 8vw, 78px) 0 40px; text-align: center; }
+    #joinView { padding: clamp(30px, 8vw, 72px) 0 38px; text-align: center; }
     .hero-icon {
       width: clamp(150px, 30vw, 188px);
       margin: 0 auto;
-      color: var(--accent);
-      filter: drop-shadow(0 18px 28px rgba(232,93,117,.18));
+      color: var(--amber-hi);
+      filter: drop-shadow(0 18px 40px rgba(0,0,0,.42));
     }
     .hero-icon svg { width: 100%; height: auto; display: block; }
     .kicker {
       margin-top: 20px;
       font-family: var(--mono);
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: .18em;
+      font-size: 12px;
+      letter-spacing: .24em;
       text-transform: uppercase;
-      color: var(--accent);
+      color: var(--amber);
     }
     #joinView h2 {
-      margin-top: 10px;
+      margin-top: 12px;
       font-family: var(--serif);
-      font-size: clamp(34px, 6vw, 54px);
-      line-height: 1.03;
-      font-weight: 800;
-      letter-spacing: -.035em;
-      color: var(--text);
+      font-size: clamp(32px, 6vw, 50px);
+      font-weight: 700;
+      letter-spacing: -.02em;
+      color: var(--paper);
     }
-    #joinView > p { max-width: 580px; margin: 14px auto 28px; color: var(--muted); line-height: 1.65; }
-    .join-form { width: min(440px, 100%); margin: 0 auto; display: grid; gap: 12px; }
+    #joinView > p { max-width: 560px; margin: 12px auto 28px; color: var(--muted); line-height: 1.6; }
+
+    .join-form { width: min(430px, 100%); margin: 0 auto; display: grid; gap: 12px; }
     .input-wrap { text-align: left; }
-    .input-wrap label { display: block; margin: 0 0 7px 4px; color: var(--muted); font-size: 12px; font-weight: 600; }
+    .input-wrap label { display: block; margin: 0 0 7px 4px; color: var(--muted); font-size: 12px; }
     input {
       width: 100%;
       min-height: 54px;
@@ -174,11 +184,10 @@
       border-radius: 16px;
       outline: none;
       color: var(--text);
-      background: #fff;
-      box-shadow: 0 4px 16px rgba(60,35,42,.035);
+      background: rgba(245,238,221,.05);
       transition: border-color .2s, box-shadow .2s, background .2s;
     }
-    input:focus { border-color: rgba(232,93,117,.55); box-shadow: 0 0 0 4px rgba(232,93,117,.10), 0 8px 22px rgba(60,35,42,.06); background: #fff; }
+    input:focus { border-color: rgba(232,163,61,.5); box-shadow: 0 0 0 4px rgba(232,163,61,.1); background: rgba(245,238,221,.07); }
     input::placeholder { color: var(--subtle); }
 
     .btn {
@@ -191,215 +200,172 @@
       border: 1px solid var(--border-strong);
       border-radius: 14px;
       color: var(--text);
-      background: #fff;
+      background: rgba(245,238,221,.06);
       cursor: pointer;
-      box-shadow: 0 5px 16px rgba(60,35,42,.045);
-      transition: transform .14s, background .2s, opacity .2s, border-color .2s, box-shadow .2s;
+      transition: transform .14s, background .2s, opacity .2s, border-color .2s;
     }
-    .btn:hover { background: #fff7f8; border-color: rgba(232,93,117,.25); box-shadow: 0 8px 22px rgba(60,35,42,.08); }
+    .btn:hover { background: rgba(245,238,221,.11); }
     .btn:active { transform: scale(.97); }
     .btn:disabled { opacity: .45; cursor: not-allowed; transform: none; }
     .btn-primary {
       border: 0;
-      color: #fff;
+      color: var(--ink);
       font-weight: 800;
-      background: linear-gradient(135deg, #e85d75, #f27a8d);
-      box-shadow: 0 12px 26px rgba(232,93,117,.24), inset 0 1px 0 rgba(255,255,255,.28);
+      background: linear-gradient(165deg, #fbf5e6, #e5d9bc);
+      box-shadow: 0 14px 34px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.55);
     }
-    .btn-primary:hover { background: linear-gradient(135deg, #dc4f68, #ed6e83); }
+    .btn-primary:hover { background: linear-gradient(165deg, #fffdf3, #efe2c4); }
     #joinBtn::after { content: "→"; margin-left: 2px; font-weight: 700; }
-    .btn-danger { color: #c23f50; background: #fff3f5; border-color: #ffd3da; }
+    .btn-danger { color: #ff948c; background: rgba(224,82,74,.09); border-color: rgba(224,82,74,.24); }
     .help { margin-top: 17px; color: var(--subtle); font-size: 12px; line-height: 1.55; }
 
-    .video-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-bottom: 12px; }
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+      gap: 14px;
+      margin-bottom: 16px;
+    }
     .video-box {
       position: relative;
-      min-height: 0;
+      min-height: 260px;
       aspect-ratio: 4 / 3;
       overflow: hidden;
-      border: 1px solid rgba(33,27,29,.13);
-      border-radius: 22px;
-      background: #181416;
+      border: 1px solid var(--border-strong);
+      border-radius: 20px;
+      background: #070605;
       isolation: isolate;
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,.03), 0 16px 34px rgba(50,30,35,.13);
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.65), inset 0 0 70px rgba(0,0,0,.62), 0 16px 34px rgba(0,0,0,.45);
       transition: box-shadow .35s, border-color .35s;
     }
+    /* live booth screens: warm frame, soft edge */
     .video-box.live, #localVideoBox {
-      border-color: rgba(232,93,117,.58);
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,.04), 0 0 28px -8px rgba(232,93,117,.34), 0 16px 34px rgba(50,30,35,.13);
+      border-color: rgba(232,163,61,.5);
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.6), inset 0 0 70px rgba(0,0,0,.55), 0 0 26px -8px rgba(232,163,61,.38), 0 16px 34px rgba(0,0,0,.45);
     }
     .video-box.live::before, #localVideoBox::before {
-      content: "LANGSUNG";
+      content: "LIVE";
       position: absolute;
-      top: 11px; left: 12px;
+      top: 10px; left: 12px;
       z-index: 3;
-      padding: 4px 8px;
-      border-radius: 999px;
-      background: rgba(239,83,103,.94);
-      color: #fff;
-      font-size: 9px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: rgba(224,82,74,.92);
+      color: #fff6f0;
+      font-size: 10px;
       font-weight: 800;
       letter-spacing: .14em;
       pointer-events: none;
       animation: liveBlink 2.2s ease-in-out infinite;
     }
-    @keyframes liveBlink { 0%, 100% { opacity: 1; } 50% { opacity: .58; } }
-    .video-box video { width: 100%; height: 100%; display: block; object-fit: cover; background: #181416; }
+    @keyframes liveBlink { 0%, 100% { opacity: 1; } 50% { opacity: .55; } }
+    .video-box video { width: 100%; height: 100%; display: block; object-fit: cover; background: #080705; }
     .video-box video.mirrored { transform: scaleX(-1); }
-    .video-box video.filter-sweet { filter: saturate(1.22) contrast(1.03) brightness(1.06) sepia(.08); }
-    .video-box video.filter-dreamy { filter: saturate(1.12) contrast(.92) brightness(1.12) blur(.15px); }
-    .video-box video.filter-noir { filter: grayscale(1) contrast(1.28) brightness(.98); }
-    .video-box video.filter-retro { filter: sepia(.34) saturate(1.35) contrast(1.08) hue-rotate(-8deg); }
-    .video-box video.filter-party { filter: saturate(1.55) contrast(1.1) brightness(1.05) hue-rotate(12deg); }
-    .frame-overlay { position: absolute; inset: 0; z-index: 2; width: 100%; height: 100%; object-fit: fill; pointer-events: none; }
-    .frame-overlay[hidden] { display: none; }
-    .preview-fallback { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; object-fit: cover; background: #181416; }
-    .video-box::after { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; box-shadow: inset 0 -110px 80px -80px rgba(0,0,0,.75); }
-    .video-meta { position: absolute; z-index: 3; left: 11px; right: 11px; bottom: 10px; display: flex; align-items: center; justify-content: space-between; gap: 8px; pointer-events: none; }
-    .video-label, .connection-pill { padding: 6px 10px; border-radius: 999px; color: #fff; font-size: 12px; background: rgba(25,18,20,.58); border: 1px solid rgba(255,255,255,.12); backdrop-filter: blur(8px); }
-    .connection-pill { color: #f3dfe3; font-size: 11px; }
-    .connection-pill.connected { color: #b9f0d0; }
-    .connection-pill.failed { color: #ffb6bd; }
+    .preview-fallback { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; object-fit: cover; background: #080705; }
+    .video-box::after { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; box-shadow: inset 0 -110px 80px -80px rgba(0,0,0,.88); }
 
-    .waiting-tile { display: grid; place-items: center; text-align: center; padding: 28px; background: radial-gradient(circle at 50% 26%, rgba(232,93,117,.12), transparent 55%), #fbf4f1; }
+    .video-meta { position: absolute; z-index: 3; left: 11px; right: 11px; bottom: 10px; display: flex; align-items: center; justify-content: space-between; gap: 8px; pointer-events: none; }
+    .video-label, .connection-pill { padding: 6px 10px; border-radius: 999px; color: #f3ecdd; font-size: 12px; background: rgba(10,8,5,.6); border: 1px solid rgba(245,238,221,.1); backdrop-filter: blur(8px); }
+    .connection-pill { color: #cfc5ac; font-size: 11px; }
+    .connection-pill.connected { color: #bfe3a6; }
+    .connection-pill.failed { color: #ffaaa4; }
+
+    .waiting-tile { display: grid; place-items: center; text-align: center; padding: 28px; background: radial-gradient(circle at 50% 26%, rgba(232,163,61,.09), transparent 55%), #120f0a; }
     .waiting-tile[hidden] { display: none; }
-    .waiting-icon { color: var(--accent); filter: drop-shadow(0 10px 24px rgba(232,93,117,.16)); }
+    .waiting-icon { color: var(--amber-hi); filter: drop-shadow(0 10px 24px rgba(232,163,61,.25)); }
     .waiting-icon svg { width: 52px; height: 52px; }
-    .waiting-tile strong { display: block; margin-top: 12px; font-family: var(--serif); font-size: 19px; color: var(--text); }
+    .waiting-tile strong { display: block; margin-top: 12px; font-family: var(--serif); font-size: 19px; color: var(--paper); }
     .waiting-tile p { max-width: 260px; margin-top: 6px; color: var(--muted); font-size: 13px; line-height: 1.5; }
 
-    .countdown-overlay { position: absolute; inset: 0; z-index: 5; display: grid; place-items: center; opacity: 0; pointer-events: none; font-family: var(--serif); font-weight: 700; font-size: clamp(96px, 22vw, 180px); color: #fff; text-shadow: 0 8px 44px rgba(0,0,0,.8); background: rgba(25,18,20,.20); transition: opacity .1s; }
+    .countdown-overlay { position: absolute; inset: 0; z-index: 5; display: grid; place-items: center; opacity: 0; pointer-events: none; font-family: var(--serif); font-weight: 700; font-size: clamp(96px, 22vw, 180px); color: var(--paper); text-shadow: 0 8px 44px rgba(0,0,0,.8); background: rgba(10,8,5,.22); transition: opacity .1s; }
     .countdown-overlay.show { opacity: 1; }
-    .countdown-overlay::after { content: ""; position: absolute; inset: 24%; border: 6px solid rgba(255,255,255,.9); border-radius: 50%; opacity: 0; transform: scale(.5); box-shadow: 0 0 80px rgba(232,93,117,.35); }
+    .countdown-overlay::after { content: ""; position: absolute; inset: 24%; border: 6px solid rgba(245,238,221,.9); border-radius: 50%; opacity: 0; transform: scale(.5); box-shadow: 0 0 80px rgba(232,163,61,.3); }
     .countdown-overlay.show::after { animation: countdownRing 1s ease-out forwards; }
     @keyframes countdownRing { 0% { opacity: 1; transform: scale(.5); } 100% { opacity: 0; transform: scale(1.06); } }
-    .flash { position: absolute; inset: 0; z-index: 8; pointer-events: none; opacity: 0; background: #fff; }
+    .flash { position: absolute; inset: 0; z-index: 8; pointer-events: none; opacity: 0; background: #fffdf6; }
     .flash.go { animation: flash .25s ease-out; }
     @keyframes flash { 0% { opacity: .94; } 100% { opacity: 0; } }
 
-    .capture-row { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px; margin: 12px 0; }
+    .capture-row { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 14px; margin: 16px 0; }
     .capture-row .left { justify-self: start; }
     .capture-row .right { justify-self: end; }
     .shutter {
-      width: 82px; height: 82px; display: grid; place-items: center; position: relative;
-      border: 3px solid #fff; border-radius: 50%;
-      background: #fff; box-shadow: 0 0 0 1px rgba(232,93,117,.24), 0 0 0 7px rgba(232,93,117,.09), 0 16px 36px rgba(232,93,117,.18);
-      cursor: pointer; transition: transform .15s, box-shadow .2s;
+      width: 92px;
+      height: 92px;
+      display: grid;
+      place-items: center;
+      position: relative;
+      border: 2px solid var(--border-strong);
+      border-radius: 50%;
+      background: radial-gradient(circle at 50% 38%, #2a2318, #15110a 72%);
+      box-shadow: 0 0 0 6px rgba(245,238,221,.04), 0 14px 40px rgba(0,0,0,.5), inset 0 2px 0 rgba(255,250,235,.08), inset 0 -10px 26px rgba(0,0,0,.55);
+      cursor: pointer;
+      transition: transform .15s, box-shadow .2s;
     }
-    .shutter::before { content: ""; width: 58px; height: 58px; border-radius: 50%; background: linear-gradient(145deg, #ff91a1, #e85d75); box-shadow: 0 0 28px rgba(232,93,117,.32), inset 0 2px 0 rgba(255,255,255,.35); }
-    .shutter .icon { position: absolute; z-index: 1; width: 27px; height: 27px; color: #fff; }
+    .shutter::before {
+      content: "";
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 50% 32%, #f8b76b, #e8a33d 55%, #c97f28);
+      box-shadow: 0 0 30px rgba(232,163,61,.42), inset 0 2px 0 rgba(255,255,255,.35), inset 0 -6px 14px rgba(120,60,10,.35);
+    }
+    .shutter .icon {
+      position: absolute;
+      z-index: 1;
+      width: 27px;
+      height: 27px;
+      color: #241505;
+    }
     .shutter:active { transform: scale(.93); }
     .shutter:disabled { opacity: .42; cursor: not-allowed; }
 
-    .action-row { display: flex; justify-content: center; flex-wrap: wrap; gap: 7px; }
-    .filter-bar { display: flex; align-items: center; gap: 9px; margin: 2px 0 14px; overflow-x: auto; padding: 3px 2px 7px; scrollbar-width: thin; }
-    .filter-label { flex: 0 0 auto; color: var(--muted); font-size: 12px; font-weight: 700; }
-    .filter-option { min-width: 68px; padding: 6px 7px 7px; display: grid; justify-items: center; gap: 4px; border: 1px solid var(--border); border-radius: 12px; color: var(--muted); background: #fff; cursor: pointer; box-shadow: 0 4px 12px rgba(60,35,42,.04); transition: border-color .2s, background .2s, transform .12s, box-shadow .2s; }
-    .filter-option:hover { border-color: rgba(232,93,117,.32); box-shadow: 0 7px 16px rgba(60,35,42,.08); }
-    .filter-option:active { transform: scale(.96); }
-    .filter-option.active { color: var(--accent); border-color: rgba(232,93,117,.52); background: #fff3f5; box-shadow: 0 7px 18px rgba(232,93,117,.12); }
-    .filter-swatch { width: 38px; height: 25px; display: block; overflow: hidden; border-radius: 8px; background: linear-gradient(135deg, #f5a9b8, #6f4d78 52%, #17151b); box-shadow: inset 0 0 0 1px rgba(255,255,255,.42); }
-    .filter-swatch.sweet { filter: saturate(1.22) brightness(1.06); background: linear-gradient(135deg, #ffd4df, #f38caa 48%, #9a6c91); }
-    .filter-swatch.dreamy { filter: brightness(1.12); background: linear-gradient(135deg, #fce6d4, #f3b7c8 50%, #9cb4d9); }
-    .filter-swatch.noir { filter: grayscale(1) contrast(1.25); background: linear-gradient(135deg, #eee, #777 48%, #141414); }
-    .filter-swatch.retro { filter: sepia(.35) saturate(1.3); background: linear-gradient(135deg, #f5c48c, #c86952 50%, #604258); }
-    .filter-swatch.party { filter: saturate(1.5); background: linear-gradient(135deg, #f8df5a, #f077ac 48%, #604bd2); }
-    .filter-option small { font-family: var(--mono); font-size: 9px; white-space: nowrap; }
-    .frame-picker { margin: 2px 0 12px; padding: 11px; border: 1px solid var(--border); border-radius: 16px; background: linear-gradient(135deg, rgba(255,255,255,.92), rgba(255,247,248,.88)); box-shadow: 0 8px 24px rgba(60,35,42,.05); }
-    .frame-picker-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
-    .frame-picker-head strong { font-family: var(--serif); font-size: 16px; color: var(--text); }
-    .frame-picker-head span { color: var(--subtle); font-size: 11px; }
-    .frame-grid { display: grid; grid-template-columns: repeat(6, minmax(64px, 1fr)); gap: 7px; overflow-x: auto; }
-    .frame-option { min-width: 64px; padding: 4px; display: grid; gap: 4px; border: 1px solid var(--border); border-radius: 11px; color: var(--muted); background: #fff; cursor: pointer; box-shadow: 0 4px 12px rgba(60,35,42,.04); transition: transform .14s, border-color .2s, box-shadow .2s, background .2s; }
-    .frame-option:hover { transform: translateY(-2px); border-color: rgba(232,93,117,.34); box-shadow: 0 8px 18px rgba(60,35,42,.09); }
-    .frame-option:active { transform: scale(.97); }
-    .frame-option.active { border: 2px solid var(--accent); padding: 4px; color: var(--accent); background: #fff4f6; box-shadow: 0 8px 20px rgba(232,93,117,.15); }
-    .frame-thumb { position: relative; aspect-ratio: 4 / 3; overflow: hidden; display: grid; place-items: center; border-radius: 8px; background: linear-gradient(135deg, #fff3f5, #f5e8e5); }
-    .frame-thumb img { width: 100%; height: 100%; object-fit: fill; }
-    .frame-thumb.original::after { content: "✦"; color: var(--accent); font-size: 25px; }
-    .frame-option strong { overflow: hidden; font-size: 10px; white-space: nowrap; text-overflow: ellipsis; }
-    @media (max-width: 760px) { .frame-grid { grid-template-columns: repeat(11, 70px); } }
+    .action-row { display: flex; justify-content: center; flex-wrap: wrap; gap: 9px; }
     .section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-top: 18px; }
-    .section-head h3 { font-size: 14px; color: #514649; }
+    .section-head h3 { font-size: 14px; color: #d8d0bc; }
     #photoCount { font-family: var(--mono); font-size: 11px; letter-spacing: .04em; color: var(--subtle); }
+
     .photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 9px; margin-top: 9px; }
-    .photo-card { min-width: 0; padding: 7px; border: 1px solid rgba(33,27,29,.08); border-radius: 14px; background: #fff; box-shadow: 0 5px 16px rgba(60,35,42,.045); }
-    .photo-card.self { border-color: rgba(232,93,117,.25); background: #fff7f8; }
-    .photo-thumb { aspect-ratio: 4 / 3; overflow: hidden; border-radius: 9px; background: #f1e9e6; }
+    .photo-card { min-width: 0; padding: 7px; border: 1px solid rgba(245,238,221,.07); border-radius: 14px; background: rgba(245,238,221,.03); }
+    .photo-card.self { border-color: rgba(232,163,61,.24); background: rgba(232,163,61,.05); }
+    .photo-thumb { aspect-ratio: 4 / 3; overflow: hidden; border-radius: 9px; background: #131009; }
     .photo-thumb img { width: 100%; height: 100%; display: block; object-fit: cover; }
     .photo-placeholder { height: 100%; display: grid; place-items: center; color: var(--subtle); }
     .photo-placeholder .icon { width: 30px; height: 30px; }
     .photo-name { margin-top: 5px; overflow: hidden; color: var(--muted); font-size: 11px; white-space: nowrap; text-overflow: ellipsis; text-align: center; }
 
-    .status-bar { margin-top: 14px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; border: 1px solid var(--border); border-radius: 15px; background: #fff; color: var(--muted); font-size: 12px; box-shadow: 0 5px 16px rgba(60,35,42,.035); }
+    .status-bar { margin-top: 14px; padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; border: 1px solid var(--border); border-radius: 15px; background: rgba(245,238,221,.03); color: var(--muted); font-size: 12px; }
     .users { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
-    .user-badge { padding: 4px 9px; border-radius: 999px; background: var(--accent-soft); color: #8b4654; }
-    .user-badge.self { color: var(--accent); font-weight: 700; }
+    .user-badge { padding: 4px 9px; border-radius: 999px; background: rgba(245,238,221,.06); }
+    .user-badge.self { color: var(--amber-hi); }
 
-    .template-selector { display: grid; grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); gap: 7px; margin: 10px 0; }
-    .template-option { padding: 12px 8px; border: 1px solid var(--border); border-radius: 14px; background: #fff; color: var(--muted); cursor: pointer; box-shadow: 0 5px 16px rgba(60,35,42,.035); transition: border-color .2s, background .2s, transform .12s, box-shadow .2s; }
-    .template-option:hover { border-color: rgba(232,93,117,.32); box-shadow: 0 8px 20px rgba(60,35,42,.07); }
-    .template-option.active { color: var(--accent); border-color: rgba(232,93,117,.5); background: #fff3f5; box-shadow: 0 8px 22px rgba(232,93,117,.10); }
+    .template-selector { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 9px; margin: 12px 0; }
+    .template-option { padding: 12px 8px; border: 1px solid var(--border); border-radius: 14px; background: rgba(245,238,221,.03); color: var(--muted); cursor: pointer; transition: border-color .2s, background .2s, transform .12s; }
+    .template-option:hover { border-color: rgba(232,163,61,.32); }
+    .template-option.active { color: var(--amber-hi); border-color: rgba(232,163,61,.5); background: rgba(232,163,61,.08); }
     .template-option strong { display: block; margin-bottom: 3px; font-size: 13px; color: inherit; }
     .template-option small { display: block; font-family: var(--mono); font-size: 10.5px; letter-spacing: .02em; color: var(--subtle); }
 
-    .canvas-wrap { display: grid; place-items: center; min-height: 360px; margin: 14px 0; padding: 16px; border-radius: 20px; background: linear-gradient(180deg, #f9f0ed, #f3e8e4); border: 1px solid var(--border); box-shadow: inset 0 1px 0 rgba(255,255,255,.9), inset 0 -30px 70px rgba(104,62,72,.08); animation: develop .5s ease both; }
-    @keyframes develop { from { opacity: 0; transform: scale(.99); filter: saturate(.7) brightness(1.04); } }
-    #finalCanvas { display: block; max-width: 100%; max-height: min(72vh, 840px); border-radius: 10px; box-shadow: 0 24px 54px rgba(60,35,42,.20), 0 2px 0 rgba(255,255,255,.7); background: #fff; }
+    .canvas-wrap { display: grid; place-items: center; min-height: 360px; margin: 14px 0; padding: 16px; border-radius: 20px; background: linear-gradient(180deg, #0d0b07, #13100a); border: 1px solid var(--border); box-shadow: inset 0 1px 0 rgba(255,250,235,.05), inset 0 -30px 70px rgba(0,0,0,.65); animation: develop .5s ease both; }
+    @keyframes develop { from { opacity: 0; transform: scale(.99); filter: sepia(.5) brightness(1.25); } }
+    #finalCanvas { display: block; max-width: 100%; max-height: min(72vh, 840px); border-radius: 10px; box-shadow: 0 24px 54px rgba(0,0,0,.62), 0 2px 0 rgba(255,255,255,.07); background: #15130e; }
     .final-head { display: flex; align-items: end; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-    .final-head h2 { font-family: var(--serif); font-size: 28px; font-weight: 800; color: var(--text); }
+    .final-head h2 { font-family: var(--serif); font-size: 26px; font-weight: 700; color: var(--paper); }
     .final-head p { color: var(--muted); font-size: 12px; }
 
-    .toast { position: fixed; left: 50%; bottom: max(20px, env(safe-area-inset-bottom)); z-index: 50; transform: translate(-50%, 18px); opacity: 0; pointer-events: none; max-width: min(90vw, 520px); padding: 11px 15px; border-radius: 999px; background: rgba(33,27,29,.95); border: 1px solid rgba(255,255,255,.14); box-shadow: 0 12px 40px rgba(0,0,0,.22); color: #fff; font-size: 13px; transition: opacity .2s, transform .2s; }
+    .toast { position: fixed; left: 50%; bottom: max(20px, env(safe-area-inset-bottom)); z-index: 50; transform: translate(-50%, 18px); opacity: 0; pointer-events: none; max-width: min(90vw, 520px); padding: 11px 15px; border-radius: 999px; background: rgba(28,22,14,.97); border: 1px solid var(--border-strong); box-shadow: 0 12px 40px rgba(0,0,0,.42); color: var(--text); font-size: 13px; transition: opacity .2s, transform .2s; }
     .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
     @media (max-width: 640px) {
-      body { padding: 8px; place-items: start center; }
-      #app { width: 100%; padding: 12px; border-radius: 22px; }
-      .app-header { gap: 8px; margin-bottom: 12px; padding-top: 5px; }
-      .brand { gap: 8px; }
-      .brand-mark { width: 36px; height: 36px; border-radius: 12px; }
-      .brand-mark .icon { width: 18px; height: 18px; }
-      .brand h1 { font-size: 20px; }
-      .room-badge { padding: 6px 8px; font-size: 9px; }
+      #app { padding: 15px; border-radius: 26px; }
+      #app::before { border-radius: 26px 26px 0 0; }
       .brand small { display: none; }
-      .room-badge { max-width: 48%; }
-      .video-grid { gap: 7px; margin-bottom: 9px; }
-      .video-box { min-height: 0; border-radius: 14px; }
-      .video-box.live::before, #localVideoBox::before { top: 7px; left: 7px; padding: 3px 6px; font-size: 8px; }
-      .video-meta { left: 7px; right: 7px; bottom: 7px; gap: 4px; }
-      .video-label, .connection-pill { padding: 4px 6px; font-size: 9px; }
-      .connection-pill { font-size: 8px; }
-      .filter-bar { gap: 6px; margin-bottom: 9px; padding-bottom: 4px; }
-      .filter-option { min-width: 60px; padding: 4px 5px 5px; border-radius: 10px; }
-      .filter-swatch { width: 32px; height: 21px; }
-      .frame-picker { padding: 9px; margin-bottom: 9px; border-radius: 14px; }
-      .frame-picker-head { margin-bottom: 7px; }
-      .frame-picker-head strong { font-size: 15px; }
-      .frame-grid { gap: 5px; }
-      .frame-option { min-width: 60px; border-radius: 9px; }
-      .frame-option strong { font-size: 9px; }
+      .room-badge { max-width: 44%; }
+      .video-box { min-height: 0; border-radius: 18px; }
       .capture-row { grid-template-columns: auto 1fr auto; }
-      .capture-row { gap: 7px; margin: 9px 0; }
-      .shutter { width: 70px; height: 70px; }
-      .shutter::before { width: 51px; height: 51px; }
+      .shutter { width: 72px; height: 72px; }
+      .shutter::before { width: 50px; height: 50px; }
       .capture-row .btn { width: 46px; padding-inline: 0; }
       .capture-row .btn .wide-label { display: none; }
-      .action-row { gap: 5px; }
-      .action-row .btn { min-height: 38px; padding: 8px 10px; border-radius: 11px; font-size: 11px; }
-      .action-row .icon { width: 15px; height: 15px; }
-      .section-head { margin-top: 12px; }
-      .photo-grid { grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 6px; margin-top: 7px; }
-      .photo-card { padding: 5px; border-radius: 10px; }
-      .photo-name { margin-top: 3px; font-size: 9px; }
-      .status-bar { margin-top: 9px; padding: 8px 9px; border-radius: 11px; font-size: 10px; }
-      .user-badge { padding: 3px 6px; }
-      .final-head h2 { font-size: 23px; }
-      .final-head p { font-size: 11px; }
-      .template-option { padding: 9px 6px; border-radius: 11px; }
-      .template-option strong { font-size: 11px; }
-      .template-option small { font-size: 9px; }
-      .canvas-wrap { min-height: 260px; margin: 10px 0; padding: 9px; border-radius: 15px; }
     }
     @media (prefers-reduced-motion: reduce) {
       .view, .canvas-wrap { animation: none; }
@@ -412,103 +378,87 @@
     <header class="app-header">
       <div class="brand">
         <div class="brand-mark"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
-        <div><h1>HaziBooth</h1><small>Abadikan momen bersama</small></div>
+        <div><h1>Photobooth</h1><small>Live photobooth for people apart</small></div>
       </div>
-      <div class="room-badge"><span id="socketDot" class="dot"></span><span id="roomDisplay">Belum terhubung</span></div>
+      <div class="room-badge"><span id="socketDot" class="dot"></span><span id="roomDisplay">Not connected</span></div>
     </header>
 
     <section id="joinView" class="view active">
       <div class="hero-icon"><svg viewBox="0 0 120 76" fill="none" aria-hidden="true"><rect x="4" y="10" width="52" height="56" rx="8" stroke="currentColor" stroke-width="2.5"/><rect x="64" y="10" width="52" height="56" rx="8" stroke="currentColor" stroke-width="2.5"/><circle cx="30" cy="32" r="10" fill="currentColor" opacity=".92"/><path d="M18 56c0-8.4 5.4-13 12-13s12 4.6 12 13" fill="currentColor" opacity=".92"/><circle cx="90" cy="32" r="10" stroke="currentColor" stroke-width="2.5"/><path d="M78 56c0-8.4 5.4-13 12-13s12 4.6 12 13" stroke="currentColor" stroke-width="2.5"/><path d="M60 22v10M55 27h10" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" opacity=".65"/></svg></div>
-      <p class="kicker">HaziBooth · ruang pribadi</p>
-      <h2>Satu momen.<br>Dua tempat. ♥</h2>
-      <p>Buat ruang pribadi, kirim tautannya ke pasangan, lalu ambil foto photobooth tersinkronisasi sambil melihat satu sama lain secara langsung.</p>
+      <p class="kicker">Private room · two people</p>
+      <h2>Same photo, different places.</h2>
+      <p>Create a private room, send the link to your person, and take synchronized photobooth shots while seeing each other live.</p>
       <div class="join-form">
         <div class="input-wrap">
-          <label for="roomInput">Ruang pribadi</label>
-          <input id="roomInput" maxlength="40" autocomplete="off" placeholder="contoh: viron-dan-alex" />
+          <label for="roomInput">Private room</label>
+          <input id="roomInput" maxlength="40" autocomplete="off" placeholder="e.g. viron-and-alex" />
         </div>
         <div class="input-wrap">
-          <label for="nameInput">Nama tampilan Anda</label>
-          <input id="nameInput" maxlength="30" autocomplete="name" placeholder="Nama Anda" />
+          <label for="nameInput">Your display name</label>
+          <input id="nameInput" maxlength="30" autocomplete="name" placeholder="Your name" />
         </div>
-        <button id="joinBtn" class="btn btn-primary">Masuk ke booth</button>
+        <button id="joinBtn" class="btn btn-primary">Join the booth</button>
       </div>
-      <p id="joinHint" class="help">Akses kamera memerlukan HTTPS, kecuali di localhost. Versi ini membatasi setiap ruang untuk dua orang.</p>
+      <p id="joinHint" class="help">Camera access requires HTTPS, except on localhost. Rooms are limited to two people in this version.</p>
     </section>
 
     <section id="cameraView" class="view">
       <div id="videoGrid" class="video-grid">
         <article id="localVideoBox" class="video-box">
           <video id="localVideo" autoplay playsinline muted></video>
-          <img id="localFrameOverlay" class="frame-overlay" alt="" hidden />
           <div class="video-meta">
-            <span id="localLabel" class="video-label">Anda</span>
-            <span class="connection-pill connected">lokal</span>
+            <span id="localLabel" class="video-label">You</span>
+            <span class="connection-pill connected">local</span>
           </div>
           <div class="countdown-overlay"></div>
           <div class="flash"></div>
         </article>
         <article id="waitingTile" class="video-box waiting-tile">
-          <div><div class="waiting-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div><strong>Menunggu pasangan Anda</strong><p>Salin tautan ruang dan biarkan tab ini tetap terbuka. Pratinjau langsung pasangan akan muncul di sini.</p></div>
+          <div><div class="waiting-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div><strong>Waiting for your person</strong><p>Copy the room link and keep this tab open. Their live preview will appear here.</p></div>
         </article>
       </div>
 
-      <div class="filter-bar" aria-label="Filter kamera">
-        <span class="filter-label">Filter</span>
-        <button class="filter-option active" data-filter="natural" aria-pressed="true"><span class="filter-swatch"></span><small>Alami</small></button>
-        <button class="filter-option" data-filter="sweet" aria-pressed="false"><span class="filter-swatch sweet"></span><small>Manis</small></button>
-        <button class="filter-option" data-filter="dreamy" aria-pressed="false"><span class="filter-swatch dreamy"></span><small>Impian</small></button>
-        <button class="filter-option" data-filter="noir" aria-pressed="false"><span class="filter-swatch noir"></span><small>Noir</small></button>
-        <button class="filter-option" data-filter="retro" aria-pressed="false"><span class="filter-swatch retro"></span><small>Retro</small></button>
-        <button class="filter-option" data-filter="party" aria-pressed="false"><span class="filter-swatch party"></span><small>Pesta</small></button>
-      </div>
-
-      <section class="frame-picker" aria-label="Pilih bingkai Anda">
-        <div class="frame-picker-head"><strong>Pilih Bingkai Anda</strong><span id="activeFrameLabel">Asli</span></div>
-        <div id="frameGrid" class="frame-grid"></div>
-      </section>
-
       <div class="capture-row">
-        <button id="leaveBtn" class="btn left" aria-label="Keluar dari ruang"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg><span class="wide-label">Keluar</span></button>
-        <button id="captureBtn" class="shutter" aria-label="Mulai pengambilan tersinkronisasi"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></button>
-        <button id="finalBtn" class="btn right" aria-label="Buka photostrip"><span class="wide-label">Strip</span><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/><line x1="17" y1="17" x2="22" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/></svg></button>
+        <button id="leaveBtn" class="btn left" aria-label="Leave room"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg><span class="wide-label">Leave</span></button>
+        <button id="captureBtn" class="shutter" aria-label="Start synchronized capture"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></button>
+        <button id="finalBtn" class="btn right" aria-label="Open photostrip"><span class="wide-label">Strip</span><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/><line x1="17" y1="17" x2="22" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/></svg></button>
       </div>
 
       <div class="action-row">
-        <button id="copyLinkBtn" class="btn"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg><span>Salin tautan ruang</span></button>
-        <button id="switchCameraBtn" class="btn"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg><span>Ganti kamera</span></button>
-        <button id="screenFlashBtn" class="btn"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><span id="flashLabel">Kilatan layar</span></button>
-        <button id="retryBtn" class="btn"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg><span>Sambungkan ulang video</span></button>
-        <button id="clearBtn" class="btn btn-danger"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg><span>Hapus foto saya</span></button>
+        <button id="copyLinkBtn" class="btn"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg><span>Copy room link</span></button>
+        <button id="switchCameraBtn" class="btn"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg><span>Flip camera</span></button>
+        <button id="screenFlashBtn" class="btn"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><span id="flashLabel">Screen flash</span></button>
+        <button id="retryBtn" class="btn"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg><span>Reconnect video</span></button>
+        <button id="clearBtn" class="btn btn-danger"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg><span>Clear my shots</span></button>
       </div>
 
-      <div class="section-head"><h3>Foto terbaru</h3><span id="photoCount">0 / 6 per orang</span></div>
+      <div class="section-head"><h3>Recent shots</h3><span id="photoCount">0 / 6 each</span></div>
       <div id="photoGrid" class="photo-grid"></div>
 
       <div class="status-bar">
-        <span id="statusText">Menyiapkan kamera…</span>
+        <span id="statusText">Preparing camera…</span>
         <div id="roomUsers" class="users"></div>
       </div>
     </section>
 
     <section id="finalView" class="view">
-      <div class="final-head"><div><h2>Photostrip bersama</h2><p>Foto dipasangkan berdasarkan pengambilan tersinkronisasi.</p></div><button id="backToCameraBtn" class="btn">← Kamera</button></div>
+      <div class="final-head"><div><h2>Your shared photostrip</h2><p>Shots are paired by synchronized capture.</p></div><button id="backToCameraBtn" class="btn">← Camera</button></div>
       <div id="templateSelector" class="template-selector">
-        <button class="template-option active" data-template="filmStrip"><strong>Strip film</strong><small>booth klasik · 4 bingkai</small></button>
-        <button class="template-option" data-template="filmStrip6"><strong>Strip film 6</strong><small>strip panjang · 6 bingkai</small></button>
-        <button class="template-option" data-template="instax"><strong>Instax</strong><small>cetak instan</small></button>
-        <button class="template-option" data-template="coupleStrip"><strong>Strip pasangan</strong><small>momen berpasangan</small></button>
-        <button class="template-option" data-template="grid2x2"><strong>2 × 2</strong><small>kisi klasik</small></button>
-        <button class="template-option" data-template="grid3x2"><strong>3 × 2</strong><small>enam bingkai</small></button>
-        <button class="template-option" data-template="polaroid"><strong>Polaroid</strong><small>cetak dramatis</small></button>
+        <button class="template-option active" data-template="filmStrip"><strong>Film strip</strong><small>classic booth · 4 frames</small></button>
+        <button class="template-option" data-template="filmStrip6"><strong>Film strip 6</strong><small>long strip · 6 frames</small></button>
+        <button class="template-option" data-template="instax"><strong>Instax</strong><small>instant print</small></button>
+        <button class="template-option" data-template="coupleStrip"><strong>Couple strip</strong><small>paired moments</small></button>
+        <button class="template-option" data-template="grid2x2"><strong>2 × 2</strong><small>classic grid</small></button>
+        <button class="template-option" data-template="grid3x2"><strong>3 × 2</strong><small>six frames</small></button>
+        <button class="template-option" data-template="polaroid"><strong>Polaroid</strong><small>dramatic print</small></button>
       </div>
       <div class="canvas-wrap"><canvas id="finalCanvas" width="900" height="1200"></canvas></div>
       <div class="action-row">
-        <button id="downloadBtn" class="btn btn-primary"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span>Unduh PNG</span></button>
-        <button id="refreshBtn" class="btn"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg><span>Muat ulang</span></button>
-        <button id="finalCopyLinkBtn" class="btn"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg><span>Salin tautan ruang</span></button>
+        <button id="downloadBtn" class="btn btn-primary"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span>Download PNG</span></button>
+        <button id="refreshBtn" class="btn"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg><span>Refresh</span></button>
+        <button id="finalCopyLinkBtn" class="btn"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg><span>Copy room link</span></button>
       </div>
-      <div class="status-bar"><span id="finalStatus">Tambahkan foto untuk membuat strip.</span><span id="photoBreakdown"></span></div>
+      <div class="status-bar"><span id="finalStatus">Add at least one shot to build a strip.</span><span id="photoBreakdown"></span></div>
     </section>
   </main>
 
@@ -525,36 +475,13 @@
       joinView: $("joinView"), cameraView: $("cameraView"), finalView: $("finalView"),
       roomInput: $("roomInput"), nameInput: $("nameInput"), joinBtn: $("joinBtn"), joinHint: $("joinHint"),
       roomDisplay: $("roomDisplay"), socketDot: $("socketDot"),
-      videoGrid: $("videoGrid"), localVideo: $("localVideo"), localVideoBox: $("localVideoBox"), localFrameOverlay: $("localFrameOverlay"), localLabel: $("localLabel"), waitingTile: $("waitingTile"),
+      videoGrid: $("videoGrid"), localVideo: $("localVideo"), localVideoBox: $("localVideoBox"), localLabel: $("localLabel"), waitingTile: $("waitingTile"),
       captureBtn: $("captureBtn"), leaveBtn: $("leaveBtn"), finalBtn: $("finalBtn"),
-      copyLinkBtn: $("copyLinkBtn"), switchCameraBtn: $("switchCameraBtn"), screenFlashBtn: $("screenFlashBtn"), retryBtn: $("retryBtn"), clearBtn: $("clearBtn"), filterBar: document.querySelector(".filter-bar"), frameGrid: $("frameGrid"), activeFrameLabel: $("activeFrameLabel"),
+      copyLinkBtn: $("copyLinkBtn"), switchCameraBtn: $("switchCameraBtn"), screenFlashBtn: $("screenFlashBtn"), retryBtn: $("retryBtn"), clearBtn: $("clearBtn"),
       photoGrid: $("photoGrid"), photoCount: $("photoCount"), roomUsers: $("roomUsers"), statusText: $("statusText"),
       backToCameraBtn: $("backToCameraBtn"), templateSelector: $("templateSelector"), finalCanvas: $("finalCanvas"), downloadBtn: $("downloadBtn"), refreshBtn: $("refreshBtn"), finalCopyLinkBtn: $("finalCopyLinkBtn"), finalStatus: $("finalStatus"), photoBreakdown: $("photoBreakdown"),
       toast: $("toast")
     };
-
-    const FILTERS = {
-      natural: { css: "", canvas: "" },
-      sweet: { css: "filter-sweet", canvas: "saturate(1.22) contrast(1.03) brightness(1.06) sepia(.08)" },
-      dreamy: { css: "filter-dreamy", canvas: "saturate(1.12) contrast(.92) brightness(1.12) blur(.15px)" },
-      noir: { css: "filter-noir", canvas: "grayscale(1) contrast(1.28) brightness(.98)" },
-      retro: { css: "filter-retro", canvas: "sepia(.34) saturate(1.35) contrast(1.08) hue-rotate(-8deg)" },
-      party: { css: "filter-party", canvas: "saturate(1.55) contrast(1.1) brightness(1.05) hue-rotate(12deg)" }
-    };
-
-    const FRAMES = [
-      { id: "none", name: "Asli", src: null },
-      { id: "hazi-love", name: "Hazi Love", src: "/frames/hazi-love.svg" },
-      { id: "hazi-cute", name: "Hazi Cute", src: "/frames/hazi-cute.svg" },
-      { id: "sakura-date", name: "Kencan Sakura", src: "/frames/sakura-date.svg" },
-      { id: "dreamy-sparkle", name: "Kilau Impian", src: "/frames/dreamy-sparkle.svg" },
-      { id: "midnight-luxe", name: "Mewah Tengah Malam", src: "/frames/midnight-luxe.svg" },
-      { id: "retro-film", name: "Film Retro", src: "/frames/retro-film.svg" },
-      { id: "strawberry-picnic", name: "Piknik Stroberi", src: "/frames/strawberry-picnic.svg" },
-      { id: "birthday-party", name: "Pesta Ulang Tahun", src: "/frames/birthday-party.svg" },
-      { id: "y2k-pop", name: "Pop Y2K", src: "/frames/y2k-pop.svg" },
-      { id: "after-date", name: "Setelah Kencan", src: "/frames/after-date.svg" }
-    ];
 
     const state = {
       room: "",
@@ -568,8 +495,6 @@
       peers: new Map(),
       remoteTiles: new Map(),
       myPhotos: [],
-      activeFilter: "natural",
-      activeFrame: "none",
       currentTemplate: "filmStrip",
       clockOffsetMs: 0,
       countdownFrame: 0,
@@ -583,53 +508,6 @@
     function showView(id) {
       document.querySelectorAll(".view").forEach((view) => view.classList.remove("active"));
       $(id).classList.add("active");
-    }
-
-    function setActiveFilter(filterName) {
-      const filter = FILTERS[filterName] ? filterName : "natural";
-      state.activeFilter = filter;
-      els.localVideo.classList.remove(...Object.values(FILTERS).map((item) => item.css).filter(Boolean));
-      if (FILTERS[filter].css) els.localVideo.classList.add(FILTERS[filter].css);
-      els.filterBar.querySelectorAll(".filter-option").forEach((button) => {
-        const active = button.dataset.filter === filter;
-        button.classList.toggle("active", active);
-        button.setAttribute("aria-pressed", String(active));
-      });
-    }
-
-    function renderFramePicker() {
-      els.frameGrid.replaceChildren();
-      FRAMES.forEach((frame) => {
-        const button = document.createElement("button");
-        button.className = `frame-option${frame.id === state.activeFrame ? " active" : ""}`;
-        button.dataset.frame = frame.id;
-        button.setAttribute("aria-pressed", String(frame.id === state.activeFrame));
-        const thumb = document.createElement("span");
-        thumb.className = `frame-thumb${frame.src ? "" : " original"}`;
-        if (frame.src) {
-          const image = document.createElement("img");
-          image.src = frame.src;
-          image.alt = "";
-          thumb.appendChild(image);
-        }
-        const label = document.createElement("strong");
-        label.textContent = frame.name;
-        button.append(thumb, label);
-        els.frameGrid.appendChild(button);
-      });
-    }
-
-    function setActiveFrame(frameId) {
-      const frame = FRAMES.find((item) => item.id === frameId) || FRAMES[0];
-      state.activeFrame = frame.id;
-      els.localFrameOverlay.hidden = !frame.src;
-      els.localFrameOverlay.src = frame.src || "";
-      els.activeFrameLabel.textContent = frame.name;
-      els.frameGrid.querySelectorAll(".frame-option").forEach((button) => {
-        const active = button.dataset.frame === frame.id;
-        button.classList.toggle("active", active);
-        button.setAttribute("aria-pressed", String(active));
-      });
     }
 
     let toastTimer = 0;
@@ -652,8 +530,8 @@
 
     async function copyRoomLink() {
       const url = roomUrl();
-      try { await navigator.clipboard.writeText(url); toast("Tautan ruang disalin"); }
-      catch { window.prompt("Salin tautan ruang ini:", url); }
+      try { await navigator.clipboard.writeText(url); toast("Room link copied"); }
+      catch { window.prompt("Copy this room link:", url); }
     }
 
     async function loadIceConfig() {
@@ -668,7 +546,7 @@
     }
 
     async function acquireCamera(facingMode = "user") {
-      if (!navigator.mediaDevices?.getUserMedia) throw new Error("Akses kamera tidak didukung di browser ini.");
+      if (!navigator.mediaDevices?.getUserMedia) throw new Error("Camera access is not supported in this browser.");
       return navigator.mediaDevices.getUserMedia({
         video: { facingMode: { ideal: facingMode }, width: { ideal: 1280 }, height: { ideal: 960 }, frameRate: { ideal: 30, max: 30 } },
         audio: false
@@ -715,10 +593,10 @@
       meta.className = "video-meta";
       const label = document.createElement("span");
       label.className = "video-label";
-      label.textContent = name || "Pasangan";
+      label.textContent = name || "Partner";
       const connection = document.createElement("span");
       connection.className = "connection-pill";
-      connection.textContent = "menyambungkan";
+      connection.textContent = "connecting";
       meta.append(label, connection);
 
       const countdown = document.createElement("div");
@@ -753,7 +631,7 @@
       const tile = state.remoteTiles.get(userId);
       if (!tile) return;
       const normalized = value === "completed" ? "connected" : value;
-      tile.connection.textContent = normalized === "relay" ? "pratinjau cadangan" : normalized === "connected" ? "terhubung" : normalized === "failed" ? "gagal" : normalized === "disconnected" ? "terputus" : normalized;
+      tile.connection.textContent = normalized === "relay" ? "relay preview" : normalized;
       const tone = normalized === "connected" || normalized === "relay" ? "connected" : normalized === "failed" || normalized === "disconnected" ? "failed" : "";
       tile.connection.className = `connection-pill ${tone}`;
       tile.box.classList.toggle("live", normalized === "connected" || normalized === "relay");
@@ -767,12 +645,12 @@
       const peer = { pc, pendingCandidates: [], makingOffer: false };
       state.peers.set(userId, peer);
       const participant = state.participants.get(userId);
-      createRemoteTile(userId, participant?.name || "Pasangan");
+      createRemoteTile(userId, participant?.name || "Partner");
 
       state.stream?.getTracks().forEach((track) => pc.addTrack(track, state.stream));
 
       pc.ontrack = (event) => {
-        const tile = createRemoteTile(userId, state.participants.get(userId)?.name || "Pasangan");
+        const tile = createRemoteTile(userId, state.participants.get(userId)?.name || "Partner");
         let remoteStream = event.streams[0];
         if (!remoteStream) {
           remoteStream = tile.video.srcObject instanceof MediaStream ? tile.video.srcObject : new MediaStream();
@@ -789,7 +667,7 @@
 
       pc.onconnectionstatechange = () => {
         updateConnectionPill(userId, pc.connectionState);
-        if (pc.connectionState === "failed") setStatus("Koneksi video gagal. Tekan sambungkan ulang.");
+        if (pc.connectionState === "failed") setStatus("Video connection failed. Tap reconnect.");
         ensurePreviewFrameLoop();
       };
       pc.oniceconnectionstatechange = () => updateConnectionPill(userId, pc.iceConnectionState);
@@ -827,8 +705,8 @@
 
     async function handleSignal(from, signal) {
       if (!state.participants.has(from)) {
-        state.participants.set(from, { name: "Pasangan", photos: [] });
-        createRemoteTile(from, "Pasangan");
+        state.participants.set(from, { name: "Partner", photos: [] });
+        createRemoteTile(from, "Partner");
         renderAll();
       }
       const peer = ensurePeer(from);
@@ -882,7 +760,7 @@
       for (const user of users || []) {
         if (!user?.id || user.id === state.userId) continue;
         incomingIds.add(user.id);
-        const participant = state.participants.get(user.id) || { name: user.name || "Pasangan", photos: [] };
+        const participant = state.participants.get(user.id) || { name: user.name || "Partner", photos: [] };
         participant.name = user.name || participant.name;
         participant.photos = Array.isArray(user.photos) ? user.photos.map(normalizePhoto).filter(Boolean).slice(-MAX_PHOTOS) : participant.photos;
         state.participants.set(user.id, participant);
@@ -910,7 +788,7 @@
         const timer = setTimeout(() => reject(new Error(`${event} timed out`)), timeout);
         state.socket.emit(event, payload, (response) => {
           clearTimeout(timer);
-          if (response?.ok === false) reject(new Error(response.error || "Permintaan gagal"));
+          if (response?.ok === false) reject(new Error(response.error || "Request failed"));
           else resolve(response || {});
         });
       });
@@ -952,7 +830,7 @@
             closeAllPeers(true);
             state.participants.clear();
             await joinSocketRoom();
-            setStatus(state.participants.size ? "Kedua kamera sudah berada di ruang" : "Menunggu pasangan Anda…");
+            setStatus(state.participants.size ? "Both cameras are in the room" : "Waiting for your person…");
             if (!initialSettled) { initialSettled = true; resolve(); }
           } catch (error) {
             if (!initialSettled) { initialSettled = true; reject(error); }
@@ -962,30 +840,30 @@
 
         state.socket.on("disconnect", () => {
           els.socketDot.classList.remove("online");
-          setStatus("Koneksi terputus. Menyambungkan ulang…");
+          setStatus("Connection lost. Reconnecting…");
           closeAllPeers(false);
         });
 
         state.socket.on("connect_error", (error) => {
           console.error("Socket connection error", error);
-          if (!initialSettled) { initialSettled = true; reject(new Error("Tidak dapat terhubung ke server HaziBooth.")); }
+          if (!initialSettled) { initialSettled = true; reject(new Error("Could not reach the photobooth server.")); }
         });
 
         state.socket.on("user_joined", ({ userId, name }) => {
           if (!userId || userId === state.userId) return;
-          state.participants.set(userId, { name: name || "Pasangan", photos: [] });
-          createRemoteTile(userId, name || "Pasangan");
+          state.participants.set(userId, { name: name || "Partner", photos: [] });
+          createRemoteTile(userId, name || "Partner");
           connectToParticipant(userId);
           ensurePreviewFrameLoop();
           renderAll();
-          toast(`${name || "Pasangan Anda"} masuk ke ruang`);
+          toast(`${name || "Your person"} joined`);
         });
 
         state.socket.on("user_left", ({ userId, name }) => {
           state.participants.delete(userId);
           closePeer(userId, true);
           renderAll();
-          toast(`${name || "Pasangan Anda"} keluar dari ruang`);
+          toast(`${name || "Your person"} left`);
         });
 
         state.socket.on("signal", ({ from, signal }) => handleSignal(from, signal));
@@ -1001,7 +879,7 @@
           if (!userId || userId === state.userId) return;
           const normalized = normalizePhoto(photo);
           if (!normalized) return;
-          const participant = state.participants.get(userId) || { name: name || "Pasangan", photos: [] };
+          const participant = state.participants.get(userId) || { name: name || "Partner", photos: [] };
           participant.name = name || participant.name;
           participant.photos = [...participant.photos.filter((item) => item.id !== normalized.id), normalized].slice(-MAX_PHOTOS);
           state.participants.set(userId, participant);
@@ -1033,7 +911,7 @@
       return { id: String(photo.id || crypto.randomUUID()), dataURL: photo.dataURL, takenAt: Number(photo.takenAt) || Date.now(), captureId: photo.captureId ? String(photo.captureId) : null };
     }
 
-    function drawVideoCover(ctx, video, width, height, mirror, filter = "") {
+    function drawVideoCover(ctx, video, width, height, mirror) {
       const sourceW = video.videoWidth;
       const sourceH = video.videoHeight;
       if (!sourceW || !sourceH) throw new Error("Camera is not ready yet.");
@@ -1043,29 +921,20 @@
       if (sourceRatio > targetRatio) { sw = sourceH * targetRatio; sx = (sourceW - sw) / 2; }
       else { sh = sourceW / targetRatio; sy = (sourceH - sh) / 2; }
       ctx.save();
-      if (filter) ctx.filter = filter;
       if (mirror) { ctx.translate(width, 0); ctx.scale(-1, 1); }
       ctx.drawImage(video, sx, sy, sw, sh, 0, 0, width, height);
       ctx.restore();
     }
 
-    async function drawSelectedFrame(ctx, width, height) {
-      const frame = FRAMES.find((item) => item.id === state.activeFrame);
-      if (!frame?.src) return;
-      const image = await loadImage(frame.src);
-      if (image) ctx.drawImage(image, 0, 0, width, height);
-    }
-
     async function captureLocalPhoto({ captureId = null, synced = false } = {}) {
-      if (state.myPhotos.length >= MAX_PHOTOS) { toast("Anda sudah memiliki 6 foto"); return; }
-      if (els.localVideo.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) { toast("Kamera masih bersiap"); return; }
+      if (state.myPhotos.length >= MAX_PHOTOS) { toast("You already have 6 shots"); return; }
+      if (els.localVideo.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) { toast("Camera is still warming up"); return; }
 
       const canvas = document.createElement("canvas");
       canvas.width = 960;
       canvas.height = 720;
       const ctx = canvas.getContext("2d", { alpha: false });
-      drawVideoCover(ctx, els.localVideo, canvas.width, canvas.height, state.facingMode === "user", FILTERS[state.activeFilter].canvas);
-      await drawSelectedFrame(ctx, canvas.width, canvas.height);
+      drawVideoCover(ctx, els.localVideo, canvas.width, canvas.height, state.facingMode === "user");
       const dataURL = canvas.toDataURL("image/jpeg", 0.84);
       const photo = { id: crypto.randomUUID(), dataURL, takenAt: Date.now() + state.clockOffsetMs, captureId };
       state.myPhotos = [...state.myPhotos, photo].slice(-MAX_PHOTOS);
@@ -1073,7 +942,7 @@
       renderAll();
       updateFinalStrip();
       state.socket?.emit("photo", { photo });
-      setStatus(synced ? "Foto tersinkronisasi diambil" : "Foto berhasil diambil");
+      setStatus(synced ? "Synchronized shot captured" : "Photo captured");
     }
 
     function flashAllTiles() {
@@ -1123,10 +992,10 @@
     }
 
     function requestSyncedCapture() {
-      if (!state.socket?.connected) { toast("Belum terhubung ke ruang"); return; }
-      if (state.myPhotos.length >= MAX_PHOTOS) { toast("Hapus foto sebelum mengambil foto baru"); return; }
+      if (!state.socket?.connected) { toast("Not connected to the room"); return; }
+      if (state.myPhotos.length >= MAX_PHOTOS) { toast("Clear a shot before taking another"); return; }
       state.socket.emit("start_countdown", { delayMs: CAPTURE_DELAY_MS }, (response) => {
-        if (response?.ok === false) toast(response.error || "Tidak dapat memulai hitung mundur");
+        if (response?.ok === false) toast(response.error || "Could not start countdown");
       });
     }
 
@@ -1162,7 +1031,7 @@
         previewCanvas.height = 240;
       }
       const ctx = previewCanvas.getContext("2d", { alpha: false });
-      try { drawVideoCover(ctx, els.localVideo, 320, 240, state.facingMode === "user", FILTERS[state.activeFilter].canvas); } catch { return; }
+      try { drawVideoCover(ctx, els.localVideo, 320, 240, state.facingMode === "user"); } catch { return; }
       state.socket.emit("preview_frame", { frame: { id: state.userId, dataURL: previewCanvas.toDataURL("image/jpeg", 0.55) } });
     }
 
@@ -1173,14 +1042,14 @@
         closePeer(userId, false);
         connectToParticipant(userId);
       }
-      setStatus("Menyambungkan ulang video langsung…");
+      setStatus("Reconnecting live video…");
     }
 
     function renderUsers() {
       els.roomUsers.replaceChildren();
       const self = document.createElement("span");
       self.className = "user-badge self";
-      self.textContent = `${state.name} · Anda`;
+      self.textContent = `${state.name} · you`;
       els.roomUsers.appendChild(self);
       for (const participant of state.participants.values()) {
         const badge = document.createElement("span");
@@ -1217,16 +1086,16 @@
       if (!count) {
         const card = document.createElement("article");
         card.className = "photo-card";
-        card.innerHTML = '<div class="photo-thumb"><div class="photo-placeholder"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div></div><div class="photo-name">Foto Anda muncul di sini</div>';
+        card.innerHTML = '<div class="photo-thumb"><div class="photo-placeholder"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div></div><div class="photo-name">Your shots appear here</div>';
         els.photoGrid.appendChild(card);
       }
       const remoteCount = [...state.participants.values()].reduce((sum, participant) => sum + participant.photos.length, 0);
-      els.photoCount.textContent = `${state.myPhotos.length} milik Anda · ${remoteCount} milik pasangan · maks. ${MAX_PHOTOS} per orang`;
+      els.photoCount.textContent = `${state.myPhotos.length} yours · ${remoteCount} theirs · ${MAX_PHOTOS} max each`;
     }
 
     function renderAll() {
-      els.localLabel.textContent = `${state.name || "Anda"} · Anda`;
-      els.roomDisplay.textContent = state.room ? `#${state.room}` : "Belum terhubung";
+      els.localLabel.textContent = `${state.name || "You"} · you`;
+      els.roomDisplay.textContent = state.room ? `#${state.room}` : "Not connected";
       renderUsers();
       renderPhotos();
       updateWaitingTile();
@@ -1235,7 +1104,7 @@
 
     function allUserGroups() {
       return [
-        { id: state.userId || "self", name: state.name || "Anda", photos: state.myPhotos },
+        { id: state.userId || "self", name: state.name || "You", photos: state.myPhotos },
         ...[...state.participants.entries()].map(([id, participant]) => ({ id, name: participant.name, photos: participant.photos }))
       ];
     }
@@ -1286,7 +1155,7 @@
     }
 
     function updatePhotoBreakdown() {
-      const parts = [`${state.name || "Anda"}: ${state.myPhotos.length}`];
+      const parts = [`${state.name || "You"}: ${state.myPhotos.length}`];
       state.participants.forEach((participant) => parts.push(`${participant.name}: ${participant.photos.length}`));
       els.photoBreakdown.textContent = parts.join(" · ");
     }
@@ -1398,13 +1267,13 @@
       ctx.fillStyle = "#23232b";
       ctx.font = "800 31px system-ui";
       ctx.textAlign = "center";
-      ctx.fillText("HaziBooth", W / 2, H - 74);
+      ctx.fillText("PHOTOBOOTH", W / 2, H - 74);
       ctx.fillStyle = "#6d6d76";
       ctx.font = "600 15px system-ui";
       ctx.fillText(`${date} · #${state.room}`, W / 2, H - 48);
     }
 
-    function drawPlaceholder(ctx, x, y, w, h, label = "Menunggu foto") {
+    function drawPlaceholder(ctx, x, y, w, h, label = "Waiting for a shot") {
       ctx.save();
       roundedRect(ctx, x, y, w, h, 14);
       ctx.fillStyle = "#222229";
@@ -1433,8 +1302,8 @@
         ctx.fillStyle = "#74747f";
         ctx.font = "700 26px system-ui";
         ctx.textAlign = "center";
-        ctx.fillText("Ambil foto untuk memulai strip", W / 2, H / 2);
-        els.finalStatus.textContent = "Tambahkan foto untuk membuat strip.";
+        ctx.fillText("Take a photo to start your strip", W / 2, H / 2);
+        els.finalStatus.textContent = "Add at least one shot to build a strip.";
         return;
       }
 
@@ -1444,7 +1313,7 @@
       if (token !== state.renderingToken) return;
       loaded.forEach(([id, image]) => imageMap.set(id, image));
 
-      const date = new Date().toLocaleDateString("id-ID", { year: "numeric", month: "short", day: "numeric" });
+      const date = new Date().toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
 
       if (state.currentTemplate === "filmStrip" || state.currentTemplate === "filmStrip6") {
         const count = state.currentTemplate === "filmStrip6" ? 6 : 4;
@@ -1462,7 +1331,7 @@
         ctx.fillStyle = "rgba(70,70,80,.5)";
         ctx.font = "700 10px system-ui";
         ctx.textAlign = "center";
-        ctx.fillText("35MM · HaziBooth 400", W / 2, H - 124);
+        ctx.fillText("35MM · PHOTOBOOTH 400", W / 2, H - 124);
         drawStripFooter(ctx, W, H, date);
       } else if (state.currentTemplate === "instax") {
         const item = flat[flat.length - 1];
@@ -1515,7 +1384,7 @@
         ctx.fillStyle = "#3a3a40";
         ctx.font = "800 15px system-ui";
         ctx.textAlign = "center";
-        ctx.fillText("HaziBooth", 0, cardH / 2 - 28);
+        ctx.fillText("PHOTOBOOTH", 0, cardH / 2 - 28);
         ctx.fillStyle = "#b3242b";
         ctx.font = "700 11px system-ui";
         ctx.fillText(`★ ${date}`, 0, cardH / 2 - 10);
@@ -1622,7 +1491,7 @@
         ctx.fillText(date, 0, cardH / 2 - 36);
         ctx.fillStyle = "#8f8f96";
         ctx.font = "800 14px system-ui";
-        ctx.fillText("HaziBooth", 0, cardH / 2 - 13);
+        ctx.fillText("PHOTOBOOTH", 0, cardH / 2 - 13);
         ctx.restore();
       } else {
         const item = flat[flat.length - 1];
@@ -1633,35 +1502,34 @@
         drawStripFooter(ctx, W, H, date);
       }
 
-      const templateNames = { filmStrip: "Strip film", filmStrip6: "Strip film 6", instax: "Instax", coupleStrip: "Strip pasangan", grid2x2: "Kisi 2 × 2", grid3x2: "Kisi 3 × 2", polaroid: "Polaroid" };
-      els.finalStatus.textContent = `${flat.length} foto bersama · ${templateNames[state.currentTemplate] || state.currentTemplate}`;
+      els.finalStatus.textContent = `${flat.length} shared photo${flat.length === 1 ? "" : "s"} · ${state.currentTemplate}`;
       updatePhotoBreakdown();
     }
 
     function describeCameraError(error) {
       const name = error?.name || "";
       const message = String(error?.message || "").toLowerCase();
-      if (!window.isSecureContext) return "Kamera memerlukan HTTPS. Buka tautan https://, bukan http://, lalu izinkan akses kamera.";
+      if (!window.isSecureContext) return "Camera needs HTTPS. Open the https:// link (not http://), then allow camera access.";
       if (name === "NotAllowedError" || message.includes("not allowed") || message.includes("permission")) {
-        return "Akses kamera ditolak. Buka tautan ini langsung di Safari atau Chrome, tekan Izinkan saat diminta, lalu periksa Pengaturan > Safari > Kamera.";
+        return "Camera access was denied. Open this link directly in Safari or Chrome (not an in-app browser), tap Allow when asked, and check Settings > Safari > Camera.";
       }
-      if (name === "NotFoundError" || message.includes("no camera")) return "Kamera tidak ditemukan di perangkat ini.";
-      return error?.message || "Tidak dapat masuk ke ruang.";
+      if (name === "NotFoundError" || message.includes("no camera")) return "No camera was found on this device.";
+      return error?.message || "Could not join the room.";
     }
 
     async function joinRoom() {
       if (state.joining) return;
       const room = normalizeRoom(els.roomInput.value) || `room-${crypto.randomUUID().slice(0, 8)}`;
-      const name = normalizeName(els.nameInput.value) || "Tamu";
+      const name = normalizeName(els.nameInput.value) || "Guest";
       state.joining = true;
       els.joinBtn.disabled = true;
-      els.joinBtn.textContent = "Membuka kamera…";
+      els.joinBtn.textContent = "Opening camera…";
       state.room = room;
       state.name = name;
       try {
         await loadIceConfig();
         await startCamera("user");
-        els.joinBtn.textContent = "Masuk ke ruang…";
+        els.joinBtn.textContent = "Joining room…";
         await connectSocket();
         history.replaceState(null, "", roomUrl());
         showView("cameraView");
@@ -1676,7 +1544,7 @@
       } finally {
         state.joining = false;
         els.joinBtn.disabled = false;
-        els.joinBtn.textContent = "Masuk ke booth";
+        els.joinBtn.textContent = "Join the booth";
       }
     }
 
@@ -1692,7 +1560,7 @@
       state.completedCaptureIds.clear();
       stopCamera();
       els.socketDot.classList.remove("online");
-      els.roomDisplay.textContent = "Belum terhubung";
+      els.roomDisplay.textContent = "Not connected";
       showView("joinView");
     }
 
@@ -1705,39 +1573,31 @@
     els.finalBtn.addEventListener("click", () => { showView("finalView"); updateFinalStrip(); });
     els.backToCameraBtn.addEventListener("click", () => showView("cameraView"));
     els.retryBtn.addEventListener("click", retryConnections);
-    els.filterBar.addEventListener("click", (event) => {
-      const button = event.target.closest(".filter-option");
-      if (button) setActiveFilter(button.dataset.filter);
-    });
-    els.frameGrid.addEventListener("click", (event) => {
-      const button = event.target.closest(".frame-option");
-      if (button) setActiveFrame(button.dataset.frame);
-    });
 
     els.switchCameraBtn.addEventListener("click", async () => {
       els.switchCameraBtn.disabled = true;
       try {
         const nextFacing = state.facingMode === "user" ? "environment" : "user";
         await startCamera(nextFacing);
-        toast(nextFacing === "user" ? "Kamera depan" : "Kamera belakang");
-      } catch (error) { toast(error.message || "Tidak dapat mengganti kamera"); }
+        toast(nextFacing === "user" ? "Front camera" : "Back camera");
+      } catch (error) { toast(error.message || "Could not switch camera"); }
       finally { els.switchCameraBtn.disabled = false; }
     });
 
     els.screenFlashBtn.addEventListener("click", () => {
       state.screenFlash = !state.screenFlash;
-      document.getElementById("flashLabel").textContent = state.screenFlash ? "Matikan kilatan" : "Kilatan layar";
+      document.getElementById("flashLabel").textContent = state.screenFlash ? "Flash off" : "Screen flash";
       els.screenFlashBtn.style.borderColor = state.screenFlash ? "rgba(232,163,61,.45)" : "";
     });
 
     els.clearBtn.addEventListener("click", () => {
       if (!state.myPhotos.length) return;
-      if (!window.confirm("Hapus semua foto Anda dari ruang ini?")) return;
+      if (!window.confirm("Clear all of your photos from this room?")) return;
       state.myPhotos = [];
       state.socket?.emit("clear_photos");
       renderAll();
       updateFinalStrip();
-      toast("Foto Anda sudah dihapus");
+      toast("Your shots were cleared");
     });
 
     els.templateSelector.addEventListener("click", (event) => {
@@ -1780,8 +1640,6 @@
       els.roomInput.value = normalizeRoom(params.get("room") || "") || `couple-${crypto.randomUUID().slice(0, 8)}`;
       els.nameInput.value = localStorage.getItem("photobooth-name") || "";
       els.nameInput.addEventListener("change", () => localStorage.setItem("photobooth-name", normalizeName(els.nameInput.value)));
-      renderFramePicker();
-      setActiveFrame("none");
       updateFinalStrip();
     })();
   </script>

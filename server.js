@@ -13,6 +13,7 @@ const LEAVE_GRACE_MS = 8000;
 const MAX_PHOTO_DATA_LENGTH = 1_500_000;
 const MAX_PREVIEW_FRAME_LENGTH = 200_000;
 const INDEX_PATH = path.join(__dirname, "public", "index.html");
+const FRAMES_DIR = path.join(__dirname, "public", "frames");
 
 const rooms = new Map();
 const memberships = new Map();
@@ -24,6 +25,18 @@ function json(res, status, payload) {
 
 const server = http.createServer((req, res) => {
   const url = new URL(req.url || "/", `http://${req.headers.host || "localhost"}`);
+  const frameMatch = req.method === "GET" && /^\/frames\/([a-z0-9-]+\.svg)$/.exec(url.pathname);
+  if (frameMatch) {
+    const framePath = path.join(FRAMES_DIR, frameMatch[1]);
+    if (!fs.existsSync(framePath)) {
+      res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
+      res.end("Not found");
+      return;
+    }
+    res.writeHead(200, { "Content-Type": "image/svg+xml; charset=utf-8", "Cache-Control": "public, max-age=3600" });
+    fs.createReadStream(framePath).pipe(res);
+    return;
+  }
   if (req.method === "GET" && url.pathname === "/") {
     res.writeHead(200, { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" });
     fs.createReadStream(INDEX_PATH)
